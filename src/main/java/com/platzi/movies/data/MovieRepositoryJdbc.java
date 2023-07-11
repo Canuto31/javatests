@@ -1,6 +1,8 @@
 package com.platzi.movies.data;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -31,10 +33,20 @@ public class MovieRepositoryJdbc implements MovieRepository {
 
     @Override
     public void saveOrUpdate(Movie movie) {
-        jdbcTemplate.update("insert into movies (name, minutes, genre) values (?, ?, ?)", movie.getName(), movie.getMinutes(), movie.getGenre().toString());
+        jdbcTemplate.update("insert into movies (name, minutes, genre) values (?, ?, ?)", movie.getName(),
+                movie.getMinutes(), movie.getGenre().toString());
     }
 
-    private static RowMapper<Movie> movieMapper = (rs, rowNum) -> new Movie(rs.getInt("id"), rs.getString("name"), rs.getInt("minutes"),
+    @Override
+    public Collection<Movie> findByName(String name) {
+        Collection<Movie> allMovies = findAll();
+
+        return allMovies.stream().filter(movie -> movie.getName().toLowerCase().contains(name.toLowerCase())).collect(Collectors
+        .toList());
+    }
+
+    private static RowMapper<Movie> movieMapper = (rs, rowNum) -> new Movie(rs.getInt("id"), rs.getString("name"),
+            rs.getInt("minutes"),
             Genre.valueOf(rs.getString("genre")));
 
 }

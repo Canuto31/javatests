@@ -64,12 +64,18 @@ public class MovieRepositoryJdbcTest {
         assertThat(movieFromDb, is(new Movie(4, "Super 8", 1123, Genre.THRILLER)));
     }
 
+    @Test
+    public void load_movie_by_name() throws ScriptException, SQLException {
+        Collection<Movie> movies = movieRepository.findByName("Meme");
+
+        assertThat(movies, is(Arrays.asList(new Movie(2, "Memento", 113, Genre.THRILLER))));
+    }
+
     @After
-    public void tearDown() throws Exception{
+    public void tearDown() throws Exception {
         // Remove H2 files -- https://stackoverflow.com/a/51809831/1121497
         final Statement s = dataSource.getConnection().createStatement();
         s.execute("drop all objects delete files"); // "shutdown" is also enough for mem db
     }
 
-    
 }
